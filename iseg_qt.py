@@ -17,6 +17,9 @@ class Predictor:
     def predict(self, point_coords: List[QPointF], point_labels: List[int]) -> np.ndarray:
         pass
 
+    def reset(self):
+        pass
+
 class RandomPredictor(Predictor):
 
     def __init__(self):
@@ -50,9 +53,15 @@ class DataModel(QObject):
         self.click_types = []  # List of click types (1 for left click, 0 for right click)
         self.active_mask = None
         self.predictor: Predictor = predictor
+    
+    def reset(self):
+        self.set_mask(None)
+        self.clear_clicks()
+        self.predictor.reset()
 
     @Slot()
     def set_image(self, file_path):
+        self.reset()
         self.image_path = file_path
         if self.predictor:
             image = cv2.imread(self.image_path)
